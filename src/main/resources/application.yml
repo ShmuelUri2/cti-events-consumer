@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: streams-joiner
+
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
+logging:
+  level:
+    '[com.interview.streamsjoiner]': INFO
