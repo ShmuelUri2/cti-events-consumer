@@ -5,12 +5,6 @@ import java.util.Map;
 
 /**
  * Represents a joined call lifecycle event published to the "joined-call-events" output stream.
- *
- * Status values:
- *   STARTED       - First participant (agent or customer) joined the call
- *   CONNECTED     - At least 1 agent AND at least 1 customer are present
- *   DISCONNECTED  - Was connected, but now only one participant type remains
- *   ENDED         - No participants remain on the call
  */
 public class CallEvent {
 

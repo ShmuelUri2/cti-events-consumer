@@ -1,20 +1,8 @@
 """
 Event Generator for the Streams-Joiner interview exercise.
 
-Produces realistic call-center events to three Redis Streams:
-  - agent-events       (AGENT_JOINED / AGENT_LEFT)
-  - customer-events    (CUSTOMER_JOINED / CUSTOMER_LEFT)
-  - business-data-events (arbitrary key-value business context)
-
-Scenarios generated:
-  1. Happy path          — customer joins, agent joins, both leave
-  2. Out-of-order        — agent arrives before customer
-  3. Agent transfer      — agent A leaves, agent B joins same call
-  4. Two agents no cust  — two agents join, no customer (should NOT trigger CONNECTED)
-  5. Customer hangs up   — customer joins and leaves before any agent
-  6. Late business data  — skill/priority arrives after connection
-
-The generator runs continuously, producing a new call scenario every 2-5 seconds.
+Produces call-center events to three Redis Streams.
+Runs continuously, producing a new call scenario every 2-5 seconds.
 """
 
 import os
@@ -98,7 +86,6 @@ def sleep_step(min_s=0.3, max_s=1.5):
 # ---------------------------------------------------------------------------
 
 def scenario_happy_path(r):
-    """Normal call: customer joins → business data → agent joins → both leave."""
     call_id = f"call-{short_id()}"
     agent_id, agent_name = random.choice(AGENT_NAMES)
     cust_id, phone = random.choice(CUSTOMER_NAMES)
@@ -139,7 +126,6 @@ def scenario_happy_path(r):
 
 
 def scenario_out_of_order(r):
-    """Agent event arrives before the customer event for the same call."""
     call_id = f"call-{short_id()}"
     agent_id, agent_name = random.choice(AGENT_NAMES)
     cust_id, phone = random.choice(CUSTOMER_NAMES)
@@ -180,7 +166,6 @@ def scenario_out_of_order(r):
 
 
 def scenario_agent_transfer(r):
-    """Agent A handles the call, then transfers to Agent B."""
     call_id = f"call-{short_id()}"
     agents = random.sample(AGENT_NAMES, 2)
     agent_a_id, agent_a_name = agents[0]
@@ -208,7 +193,7 @@ def scenario_agent_transfer(r):
     })
     sleep_step(0.5, 1.0)
 
-    # Agent B joins (transfer)
+    # Agent B joins
     emit(r, AGENT_STREAM, {
         "callId": call_id, "eventType": "AGENT_JOINED",
         "agentId": agent_b_id, "agentName": agent_b_name, "timestamp": now_iso()
@@ -228,7 +213,6 @@ def scenario_agent_transfer(r):
 
 
 def scenario_two_agents_no_customer(r):
-    """Two agents join, but NO customer ever arrives. Should NOT produce CONNECTED."""
     call_id = f"call-{short_id()}"
     agents = random.sample(AGENT_NAMES, 2)
 
@@ -259,7 +243,6 @@ def scenario_two_agents_no_customer(r):
 
 
 def scenario_customer_hangs_up_early(r):
-    """Customer joins then leaves before any agent is assigned."""
     call_id = f"call-{short_id()}"
     cust_id, phone = random.choice(CUSTOMER_NAMES)
 
@@ -278,7 +261,6 @@ def scenario_customer_hangs_up_early(r):
 
 
 def scenario_late_business_data(r):
-    """Business data arrives after the call is already connected."""
     call_id = f"call-{short_id()}"
     agent_id, agent_name = random.choice(AGENT_NAMES)
     cust_id, phone = random.choice(CUSTOMER_NAMES)
