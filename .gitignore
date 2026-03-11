@@ -6,3 +6,6 @@ target/
 *.iml
 .vscode/
 .DS_Store
+
+# Interviewer-only materials (not for candidates)
+docs/internal/
