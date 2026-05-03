@@ -30,6 +30,7 @@ services:
 
   streams-joiner-app:
     build: .
+    profiles: ["java"]
     depends_on:
       redis:
         condition: service_healthy
@@ -38,3 +39,15 @@ services:
       - SPRING_DATA_REDIS_PORT=6379
     ports:
       - "8081:8080"
+
+  streams-joiner-app-ts:
+    build: ./ts
+    profiles: ["ts"]
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    ports:
+      - "8082:8080"

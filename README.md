@@ -14,15 +14,21 @@ This is a coding exercise used during technical interviews. The exercise details
 
 ### Run
 
+Pick one app implementation via a Compose profile:
+
 ```bash
-docker-compose up --build
+# Java (Spring Boot) — exposed on host port 8081
+docker-compose --profile java up --build
+
+# TypeScript (Node.js) — exposed on host port 8082
+docker-compose --profile ts up --build
 ```
 
 This starts four services:
 1. **Redis** — the streaming backbone (port 6379)
 2. **RedisInsight** — web UI for monitoring streams at [http://localhost:5540](http://localhost:5540)
 3. **Event Generator** — continuously produces events to Redis Streams
-4. **Streams Joiner App** — your Spring Boot application
+4. **Streams Joiner App** — Spring Boot (`java` profile) or Node.js / TypeScript (`ts` profile)
 
 ### Inspect Streams
 
@@ -40,12 +46,20 @@ docker exec -it streams-joiner-redis-1 redis-cli XRANGE joined-call-events - +
 ### Rebuild After Code Changes
 
 ```bash
-docker-compose up --build streams-joiner-app
+# Java
+docker-compose --profile java up --build streams-joiner-app
+
+# TypeScript
+docker-compose --profile ts up --build streams-joiner-app-ts
 ```
 
 ---
 
 ## Project Structure
+
+Two equivalent implementations live side by side. Pick the one that matches the language you want to work in.
+
+### Java (Spring Boot) — repo root
 
 | Component | Purpose |
 |-----------|---------|
@@ -54,6 +68,14 @@ docker-compose up --build streams-joiner-app
 | Model POJOs | `AgentEvent`, `CustomerEvent`, `BusinessDataEvent`, `CallEvent` |
 | `application.yml` | Redis connection configuration |
 | `pom.xml` | Dependencies: `spring-boot-starter-data-redis`, `spring-boot-starter-web` |
-| Docker Compose | Redis + RedisInsight + event generator + app |
 
-You may create new classes, packages, and configuration files as needed.
+### TypeScript (Node.js) — `ts/`
+
+| Component | Purpose |
+|-----------|---------|
+| `ts/src/index.ts` | Application entry point |
+| `ts/src/service/callJoinerService.ts` | Starting point for your implementation |
+| `ts/src/model/*.ts` | `AgentEvent`, `CustomerEvent`, `BusinessDataEvent`, `CallEvent` types + enums |
+| `ts/package.json` | Dependencies: `ioredis`, `pino`, `jest`, `ts-node`, `typescript` |
+
+The Redis streams used (`agent-events`, `customer-events`, `business-data-events`, `joined-call-events`) and the event-generator are shared. You may create new files, modules, and configuration as needed.
