@@ -34,7 +34,5 @@ services:
       redis:
         condition: service_healthy
     environment:
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
-    ports:
-      - "8081:8080"
+      - Redis__Host=redis
+      - Redis__Port=6379
