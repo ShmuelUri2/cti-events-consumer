@@ -22,7 +22,7 @@ This starts four services:
 1. **Redis** — the streaming backbone (port 6379)
 2. **RedisInsight** — web UI for monitoring streams at [http://localhost:5540](http://localhost:5540)
 3. **Event Generator** — continuously produces events to Redis Streams
-4. **Streams Joiner App** — your Spring Boot application
+4. **Streams Joiner App** — your .NET worker service
 
 ### Inspect Streams
 
@@ -49,11 +49,11 @@ docker-compose up --build streams-joiner-app
 
 | Component | Purpose |
 |-----------|---------|
-| `StreamsJoinerApplication.java` | Spring Boot entry point |
-| `CallJoinerService.java` | Starting point for your implementation |
-| Model POJOs | `AgentEvent`, `CustomerEvent`, `BusinessDataEvent`, `CallEvent` |
-| `application.yml` | Redis connection configuration |
-| `pom.xml` | Dependencies: `spring-boot-starter-data-redis`, `spring-boot-starter-web` |
+| `Program.cs` | Application entry point — bootstraps the host and Redis connection |
+| `Services/CallJoinerService.cs` | Starting point for your implementation |
+| Model classes (`Models/`) | `AgentEvent`, `CustomerEvent`, `BusinessDataEvent`, `CallEvent` |
+| `appsettings.json` | Redis connection configuration |
+| `StreamsJoiner.csproj` | Project file — dependency: `StackExchange.Redis` |
 | Docker Compose | Redis + RedisInsight + event generator + app |
 
-You may create new classes, packages, and configuration files as needed.
+You may create new classes, namespaces, and configuration files as needed.
