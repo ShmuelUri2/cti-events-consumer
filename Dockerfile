@@ -1,14 +1,13 @@
 # --- Build stage ---
-FROM maven:3.9-eclipse-temurin-17 AS build
-WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-COPY src ./src
-RUN mvn package -DskipTests -B
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY StreamsJoiner.csproj .
+RUN dotnet restore
+COPY . .
+RUN dotnet publish -c Release -o /app
 
 # --- Runtime stage ---
-FROM eclipse-temurin:17-jre-alpine
+FROM mcr.microsoft.com/dotnet/runtime:10.0
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY --from=build /app .
+ENTRYPOINT ["dotnet", "StreamsJoiner.dll"]

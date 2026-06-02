@@ -1,10 +1,17 @@
-target/
-*.class
-*.jar
+# .NET build artifacts
+bin/
+obj/
+*.user
+
+# Logs
 *.log
+
+# IDEs
 .idea/
-*.iml
+.vs/
 .vscode/
+
+# OS
 .DS_Store
 
 # Interviewer-only materials (not for candidates)

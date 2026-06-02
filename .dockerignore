@@ -1,7 +1,10 @@
 .git
-target/
-*.iml
+bin/
+obj/
+*.user
 .idea/
+.vs/
 .vscode/
 *.log
 event-generator/
+docs/
